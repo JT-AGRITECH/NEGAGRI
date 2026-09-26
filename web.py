@@ -3,8 +3,11 @@ import pandas as pd
 from datetime import datetime, time
 import time as time_library
 
-# Configuration de la page
-st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🚜", layout="wide")
+# URL de ton logo officiel NEGAGRI hébergé
+URL_LOGO_NEGAGRI = "https://unsplash.com"
+
+# Remplacement du logo rouge dans l'onglet par ton logo NEGAGRI
+st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon=URL_LOGO_NEGAGRI, layout="wide")
 
 # Définition des horaires d'ouverture (ex: 06:00 à 21:00)
 HEURE_OUVERTURE = time(6, 0)
@@ -21,6 +24,9 @@ st.markdown("""
     .stButton>button:hover { background-color: #1B5E20; color: white; }
     .card { padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
     h1, h2, h3 { color: #1B5E20; }
+    /* Cache l'icône par défaut de Streamlit en haut des pages */
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -65,7 +71,8 @@ if not st.session_state.authentifie:
     
     col_logo, col_login = st.columns(2)
     with col_logo:
-        st.image("https://unsplash.com", caption="NEGAGRI S.A.", use_container_width=True)
+        # Affiche ton logo officiel sur la page d'accueil
+        st.image(URL_LOGO_NEGAGRI, caption="NEGAGRI S.A.", use_container_width=True)
         
     with col_login:
         st.subheader("🔑 Connexion Sécurisée")
@@ -93,7 +100,7 @@ if not st.session_state.authentifie:
     st.stop()
 
 # --- BARRE LATÉRALE : MENU DE NAVIGATION ---
-st.sidebar.image("https://unsplash.com")
+st.sidebar.image(URL_LOGO_NEGAGRI)
 st.sidebar.title("NEGAGRI")
 st.sidebar.write(f"👤 Session : **{st.session_state.utilisateur_actif}**")
 
@@ -185,10 +192,6 @@ elif choix_menu == "💰 Ventes & Clients":
             st.rerun()
         else: st.error("Stock insuffisant !")
 
-# ==========================================
-# RESSOURCES HUMAINES (MIS À JOUR AVEC CONFIG CODES SECRETS)
-# ==========================================
 elif choix_menu == "👥 Ressources Humaines":
     st.title("👥 Département des Ressources Humaines")
     
-    # 1. Si l'utilisateur connecté est Bella, on affiche 3 onglets (avec le panneau de contrôle de sécurité)
