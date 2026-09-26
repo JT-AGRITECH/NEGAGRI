@@ -3,19 +3,26 @@ import pandas as pd
 from datetime import datetime, time
 import time as time_library
 
-# URL de ton logo officiel NEGAGRI hébergé
+# URL de ton logo officiel NEGAGRI
 URL_LOGO_NEGAGRI = "https://unsplash.com"
 
-# Remplacement du logo rouge dans l'onglet par ton logo NEGAGRI
-st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon=URL_LOGO_NEGAGRI, layout="wide")
+# Configuration globale
+st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🚜", layout="wide")
 
 # Définition des horaires d'ouverture (ex: 06:00 à 21:00)
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# Styles CSS pour le design NEGAGRI, animations et cartes
+# 🛠️ CODE MAGIQUE : Cacher le logo rouge Streamlit et l'icône en haut de l'écran
 st.markdown("""
     <style>
+    /* Cache l'icône rouge Streamlit par défaut en haut à gauche et le menu */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDeployButton {display:none;}
+    
+    /* Animations de l'interface NEGAGRI */
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .welcome-title { animation: fadeIn 2s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; }
     .welcome-subtitle { animation: fadeIn 3s ease-in-out; text-align: center; color: #558B2F; font-size: 1.5rem; margin-bottom: 30px; }
@@ -24,9 +31,6 @@ st.markdown("""
     .stButton>button:hover { background-color: #1B5E20; color: white; }
     .card { padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
     h1, h2, h3 { color: #1B5E20; }
-    /* Cache l'icône par défaut de Streamlit en haut des pages */
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -71,7 +75,7 @@ if not st.session_state.authentifie:
     
     col_logo, col_login = st.columns(2)
     with col_logo:
-        # Affiche ton logo officiel sur la page d'accueil
+        # Affichage du logo officiel NEGAGRI au premier plan
         st.image(URL_LOGO_NEGAGRI, caption="NEGAGRI S.A.", use_container_width=True)
         
     with col_login:
@@ -192,6 +196,3 @@ elif choix_menu == "💰 Ventes & Clients":
             st.rerun()
         else: st.error("Stock insuffisant !")
 
-elif choix_menu == "👥 Ressources Humaines":
-    st.title("👥 Département des Ressources Humaines")
-    
