@@ -63,7 +63,7 @@ if not st.session_state.authentifie:
     st.markdown('<div class="welcome-title">🚜 NEGAGRI</div>', unsafe_allow_html=True)
     st.markdown('<div class="welcome-subtitle">Système Industriel de Gestion Agricole & d\'Élevage</div>', unsafe_allow_html=True)
     
-    col_logo, col_login = st.columns()
+    col_logo, col_login = st.columns(2)
     with col_logo:
         st.image("https://unsplash.com", caption="NEGAGRI S.A.", use_container_width=True)
         
