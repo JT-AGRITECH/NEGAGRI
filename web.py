@@ -13,7 +13,7 @@ st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🚜"
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# 🛠️ CODE MAGIQUE : Cacher le logo rouge Streamlit et l'icône en haut de l'écran
+# Styles CSS pour le design NEGAGRI, suppressions et animations
 st.markdown("""
     <style>
     /* Cache l'icône rouge Streamlit par défaut en haut à gauche et le menu */
@@ -22,10 +22,12 @@ st.markdown("""
     footer {visibility: hidden;}
     .stDeployButton {display:none;}
     
-    /* Animations de l'interface NEGAGRI */
+    /* Animations de l'interface NEGAGRI (effet fondu et montée) */
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .welcome-title { animation: fadeIn 2s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; }
-    .welcome-subtitle { animation: fadeIn 3s ease-in-out; text-align: center; color: #558B2F; font-size: 1.5rem; margin-bottom: 30px; }
+    .welcome-title { animation: fadeIn 1.5s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; }
+    .welcome-subtitle { animation: fadeIn 2.2s ease-in-out; text-align: center; color: #558B2F; font-size: 1.5rem; margin-bottom: 30px; }
+    .animated-logo { animation: fadeIn 1.8s ease-in-out; display: block; margin-left: auto; margin-right: auto; width: 60%; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    
     .main { background-color: #f8f9fa; }
     .stButton>button { width: 100%; background-color: #2E7D32; color: white; border-radius: 8px; }
     .stButton>button:hover { background-color: #1B5E20; color: white; }
@@ -70,13 +72,14 @@ if not est_ouvert:
 
 # --- INTERFACE DE BIENVENUE ANIMÉE ET SÉCURISÉE ---
 if not st.session_state.authentifie:
-    st.markdown('<div class="welcome-title">🚜 NEGAGRI</div>', unsafe_allow_html=True)
+    # Suppression du tracteur : le titre prend toute la largeur
+    st.markdown('<div class="welcome-title">NEGAGRI</div>', unsafe_allow_html=True)
     st.markdown('<div class="welcome-subtitle">Système Industriel de Gestion Agricole & d\'Élevage</div>', unsafe_allow_html=True)
     
     col_logo, col_login = st.columns(2)
     with col_logo:
-        # Affichage du logo officiel NEGAGRI au premier plan
-        st.image(URL_LOGO_NEGAGRI, caption="NEGAGRI S.A.", use_container_width=True)
+        # Injection du logo NEGAGRI au format animé via HTML/CSS personnalisé
+        st.markdown(f'<img src="{URL_LOGO_NEGAGRI}" class="animated-logo" alt="Logo NEGAGRI">', unsafe_allow_html=True)
         
     with col_login:
         st.subheader("🔑 Connexion Sécurisée")
@@ -189,10 +192,3 @@ elif choix_menu == "💰 Ventes & Clients":
         produit_vendu = st.selectbox("Produit vendu", list(st.session_state.stocks.keys()))
     with col2:
         quantite_vendue = st.number_input("Quantité vendue", min_value=1)
-    if st.button("Enregistrer la Vente"):
-        if st.session_state.stocks[produit_vendu] >= quantite_vendue:
-            st.session_state.stocks[produit_vendu] -= quantite_vendue
-            st.success("Vente validée !")
-            st.rerun()
-        else: st.error("Stock insuffisant !")
-
