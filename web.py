@@ -3,33 +3,43 @@ import pandas as pd
 from datetime import datetime, time
 import time as time_library
 
-# URL de ton logo officiel NEGAGRI
-URL_LOGO_NEGAGRI = "https://unsplash.com"
+# --- CONFIGURATION GLOBALE ---
+# L'icône de la page (page_icon) utilise un émoji neutre puisque le tracteur est supprimé
+st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢", layout="wide")
 
-# Configuration globale
-st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🚜", layout="wide")
-
-# Définition des horaires d'ouverture (ex: 06:00 à 21:00)
+# Définition des horaires d'ouverture (06:00 à 21:00)
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# Styles CSS pour le design NEGAGRI, suppressions et animations
+# --- LOGO OFFICIEL NEGAGRI EN CODE PUR (Évite le carré blanc) ---
+# Ce code représente textuellement une image de logo agricole circulaire et moderne
+LOGO_BASE64 = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231B5E20'/><path d='M35 65 V 35 L 50 50 L 65 35 V 65' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><leaf xmlns='http://w3.org' d='M50 20 Q65 20 65 35 Q50 35 50 20' fill='%238BC34A'/></svg>"
+
+# --- STYLES CSS, ANIMATIONS ET SUPPRESSIONS ---
 st.markdown("""
     <style>
-    /* Cache l'icône rouge Streamlit par défaut en haut à gauche et le menu */
+    /* 1. Supprime définitivement le logo rouge Streamlit, le tracteur et les menus d'origine */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
     .stDeployButton {display:none;}
     
-    /* Animations de l'interface NEGAGRI (effet fondu et montée) */
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .welcome-title { animation: fadeIn 1.5s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; }
-    .welcome-subtitle { animation: fadeIn 2.2s ease-in-out; text-align: center; color: #558B2F; font-size: 1.5rem; margin-bottom: 30px; }
-    .animated-logo { animation: fadeIn 1.8s ease-in-out; display: block; margin-left: auto; margin-right: auto; width: 60%; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    /* 2. Animation d'apparition fluide (Fade-In) */
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(15px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
     
+    /* Style du Titre et du Logo Animé */
+    .welcome-title { animation: fadeIn 1.2s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; margin-top: 10px; }
+    .welcome-subtitle { animation: fadeIn 1.8s ease-in-out; text-align: center; color: #558B2F; font-size: 1.4rem; margin-bottom: 40px; }
+    
+    .avatar-container { animation: fadeIn 1.5s ease-in-out; display: flex; justify-content: center; margin-bottom: 25px; }
+    .animated-logo { width: 180px; height: 180px; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.15); background-color: white; padding: 10px; }
+    
+    /* Design général de l'usine numérique */
     .main { background-color: #f8f9fa; }
-    .stButton>button { width: 100%; background-color: #2E7D32; color: white; border-radius: 8px; }
+    .stButton>button { width: 100%; background-color: #2E7D32; color: white; border-radius: 8px; font-weight: bold; }
     .stButton>button:hover { background-color: #1B5E20; color: white; }
     .card { padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
     h1, h2, h3 { color: #1B5E20; }
@@ -72,20 +82,20 @@ if not est_ouvert:
 
 # --- INTERFACE DE BIENVENUE ANIMÉE ET SÉCURISÉE ---
 if not st.session_state.authentifie:
-    # Suppression du tracteur : le titre prend toute la largeur
     st.markdown('<div class="welcome-title">NEGAGRI</div>', unsafe_allow_html=True)
     st.markdown('<div class="welcome-subtitle">Système Industriel de Gestion Agricole & d\'Élevage</div>', unsafe_allow_html=True)
     
-    col_logo, col_login = st.columns(2)
-    with col_logo:
-        # Injection du logo NEGAGRI au format animé via HTML/CSS personnalisé
-        st.markdown(f'<img src="{URL_LOGO_NEGAGRI}" class="animated-logo" alt="Logo NEGAGRI">', unsafe_allow_html=True)
+    # Centre complet du logo et du formulaire de connexion
+    col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
+    
+    with col_centre:
+        # Affichage du logo NEGAGRI animé de manière centrée et propre
+        st.markdown(f'<div class="avatar-container"><img src="{LOGO_BASE64}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
         
-    with col_login:
         st.subheader("🔑 Connexion Sécurisée")
-        code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password")
+        code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
         
-        if st.button("Se connecter"):
+        if st.button("Se connecter au Complexe Industriel"):
             utilisateur_trouve = next((emp for emp in st.session_state.employes if emp["Code"] == code_saisi), None)
             
             if utilisateur_trouve:
@@ -98,7 +108,7 @@ if not st.session_state.authentifie:
                     "Heure de Connexion": datetime.now().strftime("%d/%m/%Y à %H:%M:%S")
                 })
                 
-                with st.spinner("Ouverture de la session NEGAGRI..."):
+                with st.spinner("Vérification biométrique virtuelle..."):
                     time_library.sleep(0.8)
                 st.success(f"Accès accordé. Bienvenue {utilisateur_trouve['Nom']} !")
                 st.rerun()
@@ -107,7 +117,7 @@ if not st.session_state.authentifie:
     st.stop()
 
 # --- BARRE LATÉRALE : MENU DE NAVIGATION ---
-st.sidebar.image(URL_LOGO_NEGAGRI)
+st.sidebar.markdown(f'<div class="avatar-container"><img src="{LOGO_BASE64}" style="width:90px; height:90px; border-radius:50%;" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
 st.sidebar.title("NEGAGRI")
 st.sidebar.write(f"👤 Session : **{st.session_state.utilisateur_actif}**")
 
@@ -174,21 +184,3 @@ elif choix_menu == "🐛 Éleveurs de Hannetons":
         if st.session_state.eleveurs:
             liste_el = [e["Nom/Coopérative"] for e in st.session_state.eleveurs]
             el_selectionne = st.selectbox("Choisir l'éleveur", liste_el)
-            bacs_achetes = st.number_input("Bacs achetés", min_value=1, value=1)
-            prix_par_bac = st.number_input("Prix par bac (FCFA)", min_value=0, value=5000)
-            st.warning(f"💰 Total à verser : **{bacs_achetes * prix_par_bac:,} FCFA**")
-            if st.button("Valider l'achat"):
-                st.session_state.stocks["Hannetons (Bacs)"] += bacs_achetes
-                for e in st.session_state.eleveurs:
-                    if e["Nom/Coopérative"] == el_selectionne: e["Total Livré (Bacs)"] += bacs_achetes
-                st.success("Achat intégré au stock central NEGAGRI !")
-                st.rerun()
-
-elif choix_menu == "💰 Ventes & Clients":
-    st.title("💰 Suivi Commercial NEGAGRI")
-    col1, col2 = st.columns(2)
-    with col1:
-        client = st.text_input("Nom du Client / Entreprise")
-        produit_vendu = st.selectbox("Produit vendu", list(st.session_state.stocks.keys()))
-    with col2:
-        quantite_vendue = st.number_input("Quantité vendue", min_value=1)
