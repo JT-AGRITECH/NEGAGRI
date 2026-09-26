@@ -86,9 +86,7 @@ if not st.session_state.authentifie:
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        # Injection du logo texte N.A. dessiné en code pur
         st.markdown(f'<div class="avatar-container"><img src="{LOGO_AUTONOME}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
-        
         st.subheader("🔑 Connexion Sécurisée")
         code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
         
@@ -184,4 +182,6 @@ elif choix_menu == "🐛 Éleveurs de Hannetons":
             bacs_achetes = st.number_input("Bacs achetés", min_value=1, value=1)
             prix_par_bac = st.number_input("Prix par bac (FCFA)", min_value=0, value=5000)
             st.warning(f"💰 Total à verser : **{bacs_achetes * prix_par_bac:,} FCFA**")
+            
             if st.button("Valider l'achat"):
+                st.session_state.stocks["Hannetons (Bacs)"] += bacs_achetes
