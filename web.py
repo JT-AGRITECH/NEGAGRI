@@ -10,8 +10,8 @@ st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢"
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# URL d'une image agricole universelle très haute définition pour le logo NEGAGRI
-URL_LOGO_NEGAGRI = "https://unsplash.com"
+# LOGO INDUSTRIEL SUR-MESURE INTÉGRÉ (Cercle Vert avec texte "N.A." en blanc pour NEGAGRI)
+LOGO_AUTONOME = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%231B5E20' stroke='%238BC34A' stroke-width='3'/><text x='50' y='58' font-family='Arial, sans-serif' font-size='26' font-weight='bold' fill='white' text-anchor='middle'>N.A.</text><path d='M25 75 Q50 65 75 75' stroke='%238BC34A' stroke-width='4' fill='none'/></svg>"
 
 # --- STYLES CSS, ANIMATIONS ET SUPPRESSIONS ---
 st.markdown("""
@@ -33,7 +33,7 @@ st.markdown("""
     .welcome-subtitle { animation: fadeIn 1.8s ease-in-out; text-align: center; color: #558B2F; font-size: 1.4rem; margin-bottom: 40px; }
     
     .avatar-container { animation: fadeIn 1.5s ease-in-out; display: flex; justify-content: center; margin-bottom: 25px; }
-    .animated-logo { width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.15); object-fit: cover; border: 3px solid #1B5E20; }
+    .animated-logo { width: 140px; height: 140px; border-radius: 50%; box-shadow: 0 8px 25px rgba(27,94,32,0.3); }
     
     /* Design général de l'usine numérique */
     .main { background-color: #f8f9fa; }
@@ -86,7 +86,9 @@ if not st.session_state.authentifie:
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        st.markdown(f'<div class="avatar-container"><img src="{URL_LOGO_NEGAGRI}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
+        # Injection du logo texte N.A. dessiné en code pur
+        st.markdown(f'<div class="avatar-container"><img src="{LOGO_AUTONOME}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
+        
         st.subheader("🔑 Connexion Sécurisée")
         code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
         
@@ -112,7 +114,7 @@ if not st.session_state.authentifie:
     st.stop()
 
 # --- BARRE LATÉRALE : MENU DE NAVIGATION ---
-st.sidebar.markdown(f'<div class="avatar-container"><img src="{URL_LOGO_NEGAGRI}" style="width:90px; height:90px; border-radius:50%; object-fit:cover;" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
+st.sidebar.markdown(f'<div class="avatar-container"><img src="{LOGO_AUTONOME}" style="width:80px; height:80px;" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
 st.sidebar.title("NEGAGRI")
 st.sidebar.write(f"👤 Session : **{st.session_state.utilisateur_actif}**")
 
@@ -175,7 +177,7 @@ elif choix_menu == "🐛 Éleveurs de Hannetons":
                     st.success(f"Éleveur {nom_el} enregistré !")
                     st.rerun()
     with col_el2:
-        st.subheader("📥 Acheter la production d'un élever")
+        st.subheader("📥 Acheter la production d'un éleveur")
         if st.session_state.eleveurs:
             liste_el = [e["Nom/Coopérative"] for e in st.session_state.eleveurs]
             el_selectionne = st.selectbox("Choisir l'éleveur", liste_el)
@@ -183,8 +185,3 @@ elif choix_menu == "🐛 Éleveurs de Hannetons":
             prix_par_bac = st.number_input("Prix par bac (FCFA)", min_value=0, value=5000)
             st.warning(f"💰 Total à verser : **{bacs_achetes * prix_par_bac:,} FCFA**")
             if st.button("Valider l'achat"):
-                st.session_state.stocks["Hannetons (Bacs)"] += bacs_achetes
-                for e in st.session_state.eleveurs:
-                    if e["Nom/Coopérative"] == el_selectionne:
-                        e["Total Livré (Bacs)"] += bacs_achetes
-                st.success("Achat intégré au stock central NEGAGRI !")
