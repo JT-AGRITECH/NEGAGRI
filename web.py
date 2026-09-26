@@ -16,13 +16,13 @@ URL_LOGO_NEGAGRI = "https://unsplash.com"
 # --- STYLES CSS, ANIMATIONS ET SUPPRESSIONS ---
 st.markdown("""
     <style>
-    /* 1. Supprime définitivement l'en-tête Streamlit et les menus d'origine */
+    /* Supprime définitivement l'en-tête Streamlit et les menus d'origine */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
     .stDeployButton {display:none;}
     
-    /* 2. Animation d'apparition fluide (Fade-In) */
+    /* Animation d'apparition fluide (Fade-In) */
     @keyframes fadeIn { 
         from { opacity: 0; transform: translateY(15px); } 
         to { opacity: 1; transform: translateY(0); } 
@@ -83,13 +83,10 @@ if not st.session_state.authentifie:
     st.markdown('<div class="welcome-title">NEGAGRI</div>', unsafe_allow_html=True)
     st.markdown('<div class="welcome-subtitle">Système Industriel de Gestion Agricole & d\'Élevage</div>', unsafe_allow_html=True)
     
-    # Centre complet du logo et du formulaire de connexion
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        # Affichage du logo NEGAGRI avec la méthode native sécurisée
         st.markdown(f'<div class="avatar-container"><img src="{URL_LOGO_NEGAGRI}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
-        
         st.subheader("🔑 Connexion Sécurisée")
         code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
         
@@ -178,7 +175,7 @@ elif choix_menu == "🐛 Éleveurs de Hannetons":
                     st.success(f"Éleveur {nom_el} enregistré !")
                     st.rerun()
     with col_el2:
-        st.subheader("📥 Acheter la production d'un éleveur")
+        st.subheader("📥 Acheter la production d'un élever")
         if st.session_state.eleveurs:
             liste_el = [e["Nom/Coopérative"] for e in st.session_state.eleveurs]
             el_selectionne = st.selectbox("Choisir l'éleveur", liste_el)
@@ -188,3 +185,6 @@ elif choix_menu == "🐛 Éleveurs de Hannetons":
             if st.button("Valider l'achat"):
                 st.session_state.stocks["Hannetons (Bacs)"] += bacs_achetes
                 for e in st.session_state.eleveurs:
+                    if e["Nom/Coopérative"] == el_selectionne:
+                        e["Total Livré (Bacs)"] += bacs_achetes
+                st.success("Achat intégré au stock central NEGAGRI !")
