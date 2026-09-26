@@ -4,21 +4,19 @@ from datetime import datetime, time
 import time as time_library
 
 # --- CONFIGURATION GLOBALE ---
-# L'icône de la page (page_icon) utilise un émoji neutre puisque le tracteur est supprimé
 st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢", layout="wide")
 
 # Définition des horaires d'ouverture (06:00 à 21:00)
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# --- LOGO OFFICIEL NEGAGRI EN CODE PUR (Évite le carré blanc) ---
-# Ce code représente textuellement une image de logo agricole circulaire et moderne
-LOGO_BASE64 = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%231B5E20'/><path d='M35 65 V 35 L 50 50 L 65 35 V 65' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/><leaf xmlns='http://w3.org' d='M50 20 Q65 20 65 35 Q50 35 50 20' fill='%238BC34A'/></svg>"
+# URL d'une image agricole universelle très haute définition pour le logo NEGAGRI
+URL_LOGO_NEGAGRI = "https://unsplash.com"
 
 # --- STYLES CSS, ANIMATIONS ET SUPPRESSIONS ---
 st.markdown("""
     <style>
-    /* 1. Supprime définitivement le logo rouge Streamlit, le tracteur et les menus d'origine */
+    /* 1. Supprime définitivement l'en-tête Streamlit et les menus d'origine */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     footer {visibility: hidden;}
@@ -35,7 +33,7 @@ st.markdown("""
     .welcome-subtitle { animation: fadeIn 1.8s ease-in-out; text-align: center; color: #558B2F; font-size: 1.4rem; margin-bottom: 40px; }
     
     .avatar-container { animation: fadeIn 1.5s ease-in-out; display: flex; justify-content: center; margin-bottom: 25px; }
-    .animated-logo { width: 180px; height: 180px; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.15); background-color: white; padding: 10px; }
+    .animated-logo { width: 150px; height: 150px; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.15); object-fit: cover; border: 3px solid #1B5E20; }
     
     /* Design général de l'usine numérique */
     .main { background-color: #f8f9fa; }
@@ -89,8 +87,8 @@ if not st.session_state.authentifie:
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        # Affichage du logo NEGAGRI animé de manière centrée et propre
-        st.markdown(f'<div class="avatar-container"><img src="{LOGO_BASE64}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
+        # Affichage du logo NEGAGRI avec la méthode native sécurisée
+        st.markdown(f'<div class="avatar-container"><img src="{URL_LOGO_NEGAGRI}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
         
         st.subheader("🔑 Connexion Sécurisée")
         code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
@@ -108,7 +106,7 @@ if not st.session_state.authentifie:
                     "Heure de Connexion": datetime.now().strftime("%d/%m/%Y à %H:%M:%S")
                 })
                 
-                with st.spinner("Vérification biométrique virtuelle..."):
+                with st.spinner("Vérification des droits d'accès..."):
                     time_library.sleep(0.8)
                 st.success(f"Accès accordé. Bienvenue {utilisateur_trouve['Nom']} !")
                 st.rerun()
@@ -117,7 +115,7 @@ if not st.session_state.authentifie:
     st.stop()
 
 # --- BARRE LATÉRALE : MENU DE NAVIGATION ---
-st.sidebar.markdown(f'<div class="avatar-container"><img src="{LOGO_BASE64}" style="width:90px; height:90px; border-radius:50%;" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
+st.sidebar.markdown(f'<div class="avatar-container"><img src="{URL_LOGO_NEGAGRI}" style="width:90px; height:90px; border-radius:50%; object-fit:cover;" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
 st.sidebar.title("NEGAGRI")
 st.sidebar.write(f"👤 Session : **{st.session_state.utilisateur_actif}**")
 
@@ -184,3 +182,9 @@ elif choix_menu == "🐛 Éleveurs de Hannetons":
         if st.session_state.eleveurs:
             liste_el = [e["Nom/Coopérative"] for e in st.session_state.eleveurs]
             el_selectionne = st.selectbox("Choisir l'éleveur", liste_el)
+            bacs_achetes = st.number_input("Bacs achetés", min_value=1, value=1)
+            prix_par_bac = st.number_input("Prix par bac (FCFA)", min_value=0, value=5000)
+            st.warning(f"💰 Total à verser : **{bacs_achetes * prix_par_bac:,} FCFA**")
+            if st.button("Valider l'achat"):
+                st.session_state.stocks["Hannetons (Bacs)"] += bacs_achetes
+                for e in st.session_state.eleveurs:
