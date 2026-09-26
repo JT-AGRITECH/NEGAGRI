@@ -6,7 +6,7 @@ import time as time_library
 # Configuration de la page
 st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🚜", layout="wide")
 
-# Définition des horaires d'ouverture (ex: 06:00 à 21:00 pour te laisser le temps de tester)
+# Définition des horaires d'ouverture (ex: 06:00 à 21:00)
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
@@ -110,7 +110,7 @@ choix_menu = st.sidebar.radio(
 df_stocks = pd.DataFrame(list(st.session_state.stocks.items()), columns=["Produit", "Quantité"])
 
 # ==========================================
-# 1. TABLEAU DE BORD
+# GESTION DES ONGLETS
 # ==========================================
 if choix_menu == "🏠 Tableau de bord":
     st.title("🏭 Tableau de Bord NEGAGRI")
@@ -125,9 +125,6 @@ if choix_menu == "🏠 Tableau de bord":
     st.subheader("📊 Graphique de Production Global")
     st.bar_chart(df_stocks.set_index("Produit"))
 
-# ==========================================
-# 2. PRODUCTION & STOCKS
-# ==========================================
 elif choix_menu == "🌾 Production & Stocks":
     st.title("🌾 Gestion de la Production Interne & Stocks")
     col1, col2 = st.columns(2)
@@ -143,52 +140,55 @@ elif choix_menu == "🌾 Production & Stocks":
         st.subheader("📦 État des Silos et Bacs")
         st.table(df_stocks)
 
-# ==========================================
-# 3. NOUVEAU VOLET : ÉLEVEURS DE HANNETONS
-# ==========================================
 elif choix_menu == "🐛 Éleveurs de Hannetons":
-    st.title("🐛 Gestion du Réseau d'Éleveurs Indépendants (Hannetons)")
-    st.info("Ce volet vous permet de suivre vos éleveurs externes et d'acheter leur production pour centraliser le stock NEGAGRI.")
-    
+    st.title("🐛 Gestion du Réseau d'Éleveurs Indépendants")
     col_el1, col_el2 = st.columns(2)
-    
     with col_el1:
         st.subheader("📋 Liste des Éleveurs Partenaires")
-        df_el = pd.DataFrame(st.session_state.eleveurs)
-        st.dataframe(df_el, use_container_width=True)
-        
-        with st.expander("➕ Enregistrer un nouvel éleveur indépendant"):
+        st.dataframe(pd.DataFrame(st.session_state.eleveurs), use_container_width=True)
+        with st.expander("➕ Enregistrer un nouvel éleveur"):
             nom_el = st.text_input("Nom de l'éleveur ou de la Coopérative")
-            secteur_el = st.text_input("Secteur Géographique (ex: Yaoundé, Sa'a)")
-            bacs_el = st.number_input("Nombre de bacs d'élevage actifs au départ", min_value=0, value=5)
+            secteur_el = st.text_input("Secteur Géographique")
+            bacs_el = st.number_input("Nombre de bacs actifs", min_value=0, value=5)
             if st.button("Enregistrer le Partenaire"):
                 if nom_el:
                     st.session_state.eleveurs.append({"Nom/Coopérative": nom_el, "Secteur": secteur_el, "Bacs Actifs": bacs_el, "Total Livré (Bacs)": 0})
-                    st.success(f"Éleveur {nom_el} enregistré dans le réseau NEGAGRI !")
+                    st.success(f"Éleveur {nom_el} enregistré !")
                     st.rerun()
-
     with col_el2:
-        st.subheader("📥 Acheter / Encaisser la production d'un éleveur")
+        st.subheader("📥 Acheter la production d'un éleveur")
         if st.session_state.eleveurs:
             liste_el = [e["Nom/Coopérative"] for e in st.session_state.eleveurs]
-            el_selectionne = st.selectbox("Choisir l'éleveur livreur", liste_el)
-            bacs_achetes = st.number_input("Nombre de bacs de hannetons achetés", min_value=1, value=1)
-            prix_par_bac = st.number_input("Prix d'achat unitaire convenu (FCFA)", min_value=0, value=5000, step=500)
-            
-            montant_total_achat = bacs_achetes * prix_par_bac
-            st.warning(f"💰 Montant total à verser à l'éleveur : **{montant_total_achat:,} FCFA**")
-            
-            if st.button("Valider l'achat et intégrer au stock"):
-                # 1. Ajouter au stock central de NEGAGRI
+            el_selectionne = st.selectbox("Choisir l'éleveur", liste_el)
+            bacs_achetes = st.number_input("Bacs achetés", min_value=1, value=1)
+            prix_par_bac = st.number_input("Prix par bac (FCFA)", min_value=0, value=5000)
+            st.warning(f"💰 Total à verser : **{bacs_achetes * prix_par_bac:,} FCFA**")
+            if st.button("Valider l'achat"):
                 st.session_state.stocks["Hannetons (Bacs)"] += bacs_achetes
-                
-                # 2. Mettre à jour l'historique de livraison de l'éleveur
                 for e in st.session_state.eleveurs:
-                    if e["Nom/Coopérative"] == el_selectionne:
-                        e["Total Livré (Bacs)"] += bacs_achetes
-                
-                st.success(f"Achat validé ! {bacs_achetes} bacs ajoutés au stock central NEGAGRI.")
+                    if e["Nom/Coopérative"] == el_selectionne: e["Total Livré (Bacs)"] += bacs_achetes
+                st.success("Achat intégré au stock central NEGAGRI !")
                 st.rerun()
-        else:
-            st.write("Aucun éleveur enregistré pour le moment.")
 
+elif choix_menu == "💰 Ventes & Clients":
+    st.title("💰 Suivi Commercial NEGAGRI")
+    col1, col2 = st.columns(2)
+    with col1:
+        client = st.text_input("Nom du Client / Entreprise")
+        produit_vendu = st.selectbox("Produit vendu", list(st.session_state.stocks.keys()))
+    with col2:
+        quantite_vendue = st.number_input("Quantité vendue", min_value=1)
+    if st.button("Enregistrer la Vente"):
+        if st.session_state.stocks[produit_vendu] >= quantite_vendue:
+            st.session_state.stocks[produit_vendu] -= quantite_vendue
+            st.success("Vente validée !")
+            st.rerun()
+        else: st.error("Stock insuffisant !")
+
+# ==========================================
+# RESSOURCES HUMAINES (MIS À JOUR AVEC CONFIG CODES SECRETS)
+# ==========================================
+elif choix_menu == "👥 Ressources Humaines":
+    st.title("👥 Département des Ressources Humaines")
+    
+    # 1. Si l'utilisateur connecté est Bella, on affiche 3 onglets (avec le panneau de contrôle de sécurité)
