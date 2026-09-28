@@ -10,8 +10,23 @@ st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢"
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# LOGO INDUSTRIEL SUR-MESURE INTÉGRÉ (Cercle Vert avec texte "N.A." en blanc pour NEGAGRI)
-LOGO_AUTONOME = "data:image/svg+xml;utf8,<svg xmlns='http://w3.org' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%231B5E20' stroke='%238BC34A' stroke-width='3'/><text x='50' y='58' font-family='Arial, sans-serif' font-size='26' font-weight='bold' fill='white' text-anchor='middle'>N.A.</text><path d='M25 75 Q50 65 75 75' stroke='%238BC34A' stroke-width='4' fill='none'/></svg>"
+# LOGO INDUSTRIEL SUR-MESURE INTÉGRÉ (Correction du rendu SVG pour Mac et Streamlit)
+LOGO_SVG_BRUT = """
+<svg xmlns='http://w3.org' viewBox='0 0 100 100' class='animated-logo'>
+    <circle cx='50' cy='50' r='46' fill='#1B5E20' stroke='#8BC34A' stroke-width='3'/>
+    <text x='50' y='58' font-family='Arial, sans-serif' font-size='26' font-weight='bold' fill='white' text-anchor='middle'>N.A.</text>
+    <path d='M25 75 Q50 65 75 75' stroke='#8BC34A' stroke-width='4' fill='none'/>
+</svg>
+"""
+
+# Logo spécifique pour la barre latérale (sans l'animation de l'accueil)
+LOGO_SIDEBAR = """
+<svg xmlns='http://w3.org' viewBox='0 0 100 100' style='width:80px; height:80px;'>
+    <circle cx='50' cy='50' r='46' fill='#1B5E20' stroke='#8BC34A' stroke-width='3'/>
+    <text x='50' y='58' font-family='Arial, sans-serif' font-size='26' font-weight='bold' fill='white' text-anchor='middle'>N.A.</text>
+    <path d='M25 75 Q50 65 75 75' stroke='#8BC34A' stroke-width='4' fill='none'/>
+</svg>
+"""
 
 # --- STYLES CSS, ANIMATIONS ET SUPPRESSIONS ---
 st.markdown("""
@@ -86,7 +101,8 @@ if not st.session_state.authentifie:
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        st.markdown(f'<div class="avatar-container"><img src="{LOGO_AUTONOME}" class="animated-logo" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
+        # Affichage direct du SVG injecté dans le conteneur CSS
+        st.markdown(f'<div class="avatar-container">{LOGO_SVG_BRUT}</div>', unsafe_allow_html=True)
         st.subheader("🔑 Connexion Sécurisée")
         code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
         
@@ -112,7 +128,8 @@ if not st.session_state.authentifie:
     st.stop()
 
 # --- BARRE LATÉRALE : MENU DE NAVIGATION ---
-st.sidebar.markdown(f'<div class="avatar-container"><img src="{LOGO_AUTONOME}" style="width:80px; height:80px;" alt="Logo NEGAGRI"></div>', unsafe_allow_html=True)
+# Correction de l'affichage du logo dans la sidebar
+st.sidebar.markdown(f'<div class="avatar-container">{LOGO_SIDEBAR}</div>', unsafe_allow_html=True)
 st.sidebar.title("NEGAGRI")
 st.sidebar.write(f"👤 Session : **{st.session_state.utilisateur_actif}**")
 
@@ -153,35 +170,13 @@ elif choix_menu == "🌾 Production & Stocks":
         quantite_ajout = st.number_input("Quantité produite", min_value=1, value=10)
         if st.button("Valider la production"):
             st.session_state.stocks[produit_select] += quantite_ajout
-            st.success(f"Stock de {produit_select} mis à jour par {st.session_state.utilisateur_actif} !")
+            st.success(f"Stock de {produit_select} mis à jour !")
             st.rerun()
-    with col2:
-        st.subheader("📦 État des Silos et Bacs")
-        st.table(df_stocks)
-
-elif choix_menu == "🐛 Éleveurs de Hannetons":
-    st.title("🐛 Gestion du Réseau d'Éleveurs Indépendants")
-    col_el1, col_el2 = st.columns(2)
-    with col_el1:
-        st.subheader("📋 Liste des Éleveurs Partenaires")
-        st.dataframe(pd.DataFrame(st.session_state.eleveurs), use_container_width=True)
-        with st.expander("➕ Enregistrer un nouvel éleveur"):
-            nom_el = st.text_input("Nom de l'éleveur ou de la Coopérative")
-            secteur_el = st.text_input("Secteur Géographique")
-            bacs_el = st.number_input("Nombre de bacs actifs", min_value=0, value=5)
-            if st.button("Enregistrer le Partenaire"):
-                if nom_el:
-                    st.session_state.eleveurs.append({"Nom/Coopérative": nom_el, "Secteur": secteur_el, "Bacs Actifs": bacs_el, "Total Livré (Bacs)": 0})
-                    st.success(f"Éleveur {nom_el} enregistré !")
-                    st.rerun()
-    with col_el2:
-        st.subheader("📥 Acheter la production d'un éleveur")
-        if st.session_state.eleveurs:
-            liste_el = [e["Nom/Coopérative"] for e in st.session_state.eleveurs]
-            el_selectionne = st.selectbox("Choisir l'éleveur", liste_el)
-            bacs_achetes = st.number_input("Bacs achetés", min_value=1, value=1)
-            prix_par_bac = st.number_input("Prix par bac (FCFA)", min_value=0, value=5000)
-            st.warning(f"💰 Total à verser : **{bacs_achetes * prix_par_bac:,} FCFA**")
             
-            if st.button("Valider l'achat"):
-                st.session_state.stocks["Hannetons (Bacs)"] += bacs_achetes
+    with col2:
+        st.subheader("📦 État actuel des hangars")
+        st.dataframe(df_stocks, use_container_width=True)
+
+else:
+    st.title(f"{choix_menu}")
+    st.info("Cette section est prête à recevoir ses fonctionnalités spécifiques.")
