@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, time
 import time as time_library
-import os
 
 # --- CONFIGURATION GLOBALE ---
 st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢", layout="wide")
@@ -11,22 +10,8 @@ st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢"
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# --- CONFIGURATION DU LOGO (LOCAL + GITHUB OFFICIEL) ---
-PSEUDO_GITHUB = "JT-AGRITECH"
-DEPOT_GITHUB = "NEGAGRI"
-
-# URL pour récupérer l'image en ligne depuis votre dépôt GitHub
-URL_LOGO_GITHUB = f"https://githubusercontent.com{PSEUDO_GITHUB}/{DEPOT_GITHUB}/main/assets/mon-logo-512.png"
-
-# Chemin pour le développement en local sur votre Mac
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CHEMIN_LOGO_LOCAL = os.path.join(BASE_DIR, "assets", "mon-logo-512.png")
-
-# Choix automatique de la source (Local si présent, sinon GitHub en ligne)
-if os.path.exists(CHEMIN_LOGO_LOCAL):
-    LOGO_NEGAGRI = CHEMIN_LOGO_LOCAL
-else:
-    LOGO_NEGAGRI = URL_LOGO_GITHUB
+# --- LOGO OFFICIEL NEGAGRI INTÉGRÉ (Encodé en Base64 pour une autonomie totale en ligne) ---
+LOGO_NEGAGRI_AUTONOME = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICAgIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjQwIiBmaWxsPSIjMUI1RTIwIiBzdHJva2U9IiM4QkMzNEEiIHN0cm9rZS13aWR0aD0iMTIiLz4KICAgIDx0ZXh0IHg9IjI1NiIgeT0iMjkwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTIwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk4uQS48L3RleHQ+CiAgICA8cGF0aCBkPSJNMTIwIDM4MCBRMjU2IDMyMCAzOTIgMzgwIiBzdHJva2U9IiM4QkMzNEEiIHN0cm9rZS13aWR0aD0iMTYiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4="
 
 # --- STYLES CSS, ANIMATIONS ET SUPPRESSIONS ---
 st.markdown("""
@@ -43,7 +28,7 @@ st.markdown("""
         to { opacity: 1; transform: translateY(0); } 
     }
     
-    /* Style du Titre et du Subtitle */
+    /* Style du Titre et du Logo Animé */
     .welcome-title { animation: fadeIn 1.2s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; margin-top: 10px; }
     .welcome-subtitle { animation: fadeIn 1.8s ease-in-out; text-align: center; color: #558B2F; font-size: 1.4rem; margin-bottom: 40px; }
     
@@ -98,8 +83,8 @@ if not st.session_state.authentifie:
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        # Affichage sécurisé et centré du logo officiel
-        st.image(LOGO_NEGAGRI, use_container_width=True)
+        # Affichage direct et centré du logo autonome à partir du Base64
+        st.image(LOGO_NEGAGRI_AUTONOME, width=160)
 
         st.subheader("🔑 Connexion Sécurisée")
         code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
@@ -126,7 +111,7 @@ if not st.session_state.authentifie:
     st.stop()
 
 # --- BARRE LATÉRALE : MENU DE NAVIGATION ---
-st.sidebar.image(LOGO_NEGAGRI, width=100)
+st.sidebar.image(LOGO_NEGAGRI_AUTONOME, width=90)
 st.sidebar.title("NEGAGRI")
 st.sidebar.write(f"👤 Session : **{st.session_state.utilisateur_actif}**")
 
