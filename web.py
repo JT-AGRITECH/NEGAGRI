@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, time
 import time as time_library
+import os
 
 # --- CONFIGURATION GLOBALE ---
 st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢", layout="wide")
@@ -10,23 +11,23 @@ st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢"
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# LOGO INDUSTRIEL SUR-MESURE INTÉGRÉ (Correction du rendu SVG pour Mac et Streamlit)
-LOGO_SVG_BRUT = """
-<svg xmlns='http://w3.org' viewBox='0 0 100 100' class='animated-logo'>
-    <circle cx='50' cy='50' r='46' fill='#1B5E20' stroke='#8BC34A' stroke-width='3'/>
-    <text x='50' y='58' font-family='Arial, sans-serif' font-size='26' font-weight='bold' fill='white' text-anchor='middle'>N.A.</text>
-    <path d='M25 75 Q50 65 75 75' stroke='#8BC34A' stroke-width='4' fill='none'/>
-</svg>
-"""
+# --- CONFIGURATION DU LOGO (LOCAL + GITHUB) ---
+# Remplacer par votre pseudo et le nom de votre dépôt GitHub exacts :
+PSEUDO_GITHUB = "VOTRE_NOM_UTILISATEUR_GITHUB"
+DEPOT_GITHUB = "VOTRE_NOM_DE_DEPOT"
 
-# Logo spécifique pour la barre latérale (sans l'animation de l'accueil)
-LOGO_SIDEBAR = """
-<svg xmlns='http://w3.org' viewBox='0 0 100 100' style='width:80px; height:80px;'>
-    <circle cx='50' cy='50' r='46' fill='#1B5E20' stroke='#8BC34A' stroke-width='3'/>
-    <text x='50' y='58' font-family='Arial, sans-serif' font-size='26' font-weight='bold' fill='white' text-anchor='middle'>N.A.</text>
-    <path d='M25 75 Q50 65 75 75' stroke='#8BC34A' stroke-width='4' fill='none'/>
-</svg>
-"""
+# URL pour récupérer l'image en ligne depuis GitHub
+URL_LOGO_GITHUB = f"https://githubusercontent.com{PSEUDO_GITHUB}/{DEPOT_GITHUB}/main/assets/mon-logo-512.png"
+
+# Chemin pour le développement en local sur votre Mac
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CHEMIN_LOGO_LOCAL = os.path.join(BASE_DIR, "assets", "mon-logo-512.png")
+
+# Choix automatique de la source de l'image (Local vs En ligne)
+if os.path.exists(CHEMIN_LOGO_LOCAL):
+    LOGO_NEGAGRI = CHEMIN_LOGO_LOCAL
+else:
+    LOGO_NEGAGRI = URL_LOGO_GITHUB
 
 # --- STYLES CSS, ANIMATIONS ET SUPPRESSIONS ---
 st.markdown("""
@@ -46,9 +47,6 @@ st.markdown("""
     /* Style du Titre et du Logo Animé */
     .welcome-title { animation: fadeIn 1.2s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; margin-top: 10px; }
     .welcome-subtitle { animation: fadeIn 1.8s ease-in-out; text-align: center; color: #558B2F; font-size: 1.4rem; margin-bottom: 40px; }
-    
-    .avatar-container { animation: fadeIn 1.5s ease-in-out; display: flex; justify-content: center; margin-bottom: 25px; }
-    .animated-logo { width: 140px; height: 140px; border-radius: 50%; box-shadow: 0 8px 25px rgba(27,94,32,0.3); }
     
     /* Design général de l'usine numérique */
     .main { background-color: #f8f9fa; }
@@ -101,8 +99,9 @@ if not st.session_state.authentifie:
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        # Affichage direct du SVG injecté dans le conteneur CSS
-        st.markdown(f'<div class="avatar-container">{LOGO_SVG_BRUT}</div>', unsafe_allow_html=True)
+        # Rendu visuel propre et centré du logo
+        st.image(LOGO_NEGAGRI, use_container_width=True)
+
         st.subheader("🔑 Connexion Sécurisée")
         code_saisi = st.text_input("Entrez votre code d'accès personnel", type="password", label_visibility="collapsed")
         
@@ -128,8 +127,7 @@ if not st.session_state.authentifie:
     st.stop()
 
 # --- BARRE LATÉRALE : MENU DE NAVIGATION ---
-# Correction de l'affichage du logo dans la sidebar
-st.sidebar.markdown(f'<div class="avatar-container">{LOGO_SIDEBAR}</div>', unsafe_allow_html=True)
+st.sidebar.image(LOGO_NEGAGRI, width=100)
 st.sidebar.title("NEGAGRI")
 st.sidebar.write(f"👤 Session : **{st.session_state.utilisateur_actif}**")
 
