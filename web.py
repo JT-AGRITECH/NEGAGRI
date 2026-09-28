@@ -11,19 +11,18 @@ st.set_page_config(page_title="NEGAGRI - Gestion Industrielle", page_icon="🏢"
 HEURE_OUVERTURE = time(6, 0)
 HEURE_FERMETURE = time(21, 0)
 
-# --- CONFIGURATION DU LOGO (LOCAL + GITHUB) ---
-# Remplacer par votre pseudo et le nom de votre dépôt GitHub exacts :
-PSEUDO_GITHUB = "VOTRE_NOM_UTILISATEUR_GITHUB"
-DEPOT_GITHUB = "VOTRE_NOM_DE_DEPOT"
+# --- CONFIGURATION DU LOGO (LOCAL + GITHUB OFFICIEL) ---
+PSEUDO_GITHUB = "JT-AGRITECH"
+DEPOT_GITHUB = "NEGAGRI"
 
-# URL pour récupérer l'image en ligne depuis GitHub
+# URL pour récupérer l'image en ligne depuis votre dépôt GitHub
 URL_LOGO_GITHUB = f"https://githubusercontent.com{PSEUDO_GITHUB}/{DEPOT_GITHUB}/main/assets/mon-logo-512.png"
 
 # Chemin pour le développement en local sur votre Mac
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CHEMIN_LOGO_LOCAL = os.path.join(BASE_DIR, "assets", "mon-logo-512.png")
 
-# Choix automatique de la source de l'image (Local vs En ligne)
+# Choix automatique de la source (Local si présent, sinon GitHub en ligne)
 if os.path.exists(CHEMIN_LOGO_LOCAL):
     LOGO_NEGAGRI = CHEMIN_LOGO_LOCAL
 else:
@@ -44,7 +43,7 @@ st.markdown("""
         to { opacity: 1; transform: translateY(0); } 
     }
     
-    /* Style du Titre et du Logo Animé */
+    /* Style du Titre et du Subtitle */
     .welcome-title { animation: fadeIn 1.2s ease-in-out; color: #1B5E20; text-align: center; font-weight: bold; font-size: 3rem; margin-top: 10px; }
     .welcome-subtitle { animation: fadeIn 1.8s ease-in-out; text-align: center; color: #558B2F; font-size: 1.4rem; margin-bottom: 40px; }
     
@@ -99,7 +98,7 @@ if not st.session_state.authentifie:
     col_vide1, col_centre, col_vide2 = st.columns([1, 2, 1])
     
     with col_centre:
-        # Rendu visuel propre et centré du logo
+        # Affichage sécurisé et centré du logo officiel
         st.image(LOGO_NEGAGRI, use_container_width=True)
 
         st.subheader("🔑 Connexion Sécurisée")
